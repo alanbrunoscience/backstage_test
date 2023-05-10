@@ -1,11 +1,9 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: "teste-sonar2"
+  name: "backstage_test"
   annotations:
-    github.com/project-slug: giacomo-piccoli/teste-sonar2
-    datadoghq.com/dashboard-url: https://p.datadoghq.com/sb/17677266-ee8e-11ed-8ee1-da7ad0900002-f1a02659b89257dfa9f6dd3952a77ebd
-    sonarqube.org/project-key: default/teste-sonar2
+    github.com/project-slug: alanbrunoscience/backstage_test
 spec:
   type: service
   owner: user:guest
