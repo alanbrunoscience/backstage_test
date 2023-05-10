@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Jazz.Application\Jazz.Application.csproj" />
+		<ProjectReference Include="..\Jazz.Common\Jazz.Common.csproj" />
+		<ProjectReference Include="..\Jazz.Core\Jazz.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="DotNetCore.CAP" Version="7.1.1" />
+		<PackageReference Include="DotNetCore.CAP.SqlServer" Version="7.1.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.4" />
+		<PackageReference Include="Serilog" Version="2.12.0" />
+		<AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
+	</ItemGroup>
+
+</Project>

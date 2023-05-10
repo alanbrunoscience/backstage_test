@@ -1,0 +1,423 @@
+name: Build and Deploy - HML, PPRD, SDX e PROD
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  Build-Application:
+    name: "Build"
+    runs-on: self-hosted
+
+    env:
+      REGISTRY_GH: ghcr.io
+      # ENDPOINT_ECR_SHARED: 859892328121.dkr.ecr.us-east-1.amazonaws.com
+
+    steps:         
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+         fetch-depth: 0  
+          # submodules: 'true'
+          # token: ${{ secrets.JTPATGHPKG001 }}
+
+      # - name: Generate General Tag (Run Date and GitHub Run Number)
+      #   run: echo "GENERAL_TAG=$(date +'%Y%m%d_'$GITHUB_RUN_NUMBER)" >> $GITHUB_ENV
+
+      - name: Cache SonarQube packages
+        uses: actions/cache@v3
+        with:
+          path: ~/sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Cache SonarQube scanner
+        id: cache-sonar-scanner
+        uses: actions/cache@v3
+        with:
+          path: ./.sonar/scanner
+          key: ${{ runner.os }}-sonar-scanner
+          restore-keys: ${{ runner.os }}-sonar-scanner
+
+      - name: Install SonarQube scanner
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        run: |
+          dotnet tool update dotnet-sonarscanner --tool-path ./home/sonar2/.dotnet/tools
+
+      - name: Split the owner and name of a repository
+        run: |
+          IN=${{ github.repository }}
+          nameSplitRepo=(${IN//// })
+          echo "GITHUB_REPO_OWNER=$(echo ${nameSplitRepo[0]} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+          echo "GITHUB_REPO_NAME=$(echo ${nameSplitRepo[1]} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+        shell: bash
+
+      - name: SonarScan
+        run: |
+         export PATH="$PATH:/sonar-dot/sonar-scanner-4.8.0.2856/bin"
+         export PATH="$PATH:/home/sonar2/.dotnet/tools"
+         dotnet sonarscanner begin /k:"${{ env.GITHUB_REPO_NAME }}" /d:sonar.host.url="http://localhost:9000"  /d:sonar.login="${{ secrets.SONAR_TOKEN }}"  /d:sonar.cs.dotcover.reportsPaths=dotCover.Output.html
+         dotnet dotcover test --dcReportType=HTML src/*.sln
+         dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+
+      - name: SonarQube Quality Gate check
+        id: sonarqube-quality-gate-check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        timeout-minutes: 5
+        with:
+          scanMetadataReportFile: .sonarqube/out/.sonar/report-task.txt
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} 
+    
+      - name: "Example show SonarQube Quality Gate Status value"
+        run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
+
+      # - name: Get App Startup Folder Name
+      #   uses: Add-Jazztech/github-app-startup-folder-name-action@v1.0.0
+      #   with:
+      #     app-startup-folder-path: "./src/*.ServiceHost"
+
+      # - name: GitHub Container Registry Login
+      #   uses: docker/login-action@v2
+      #   with:
+      #     registry: ${{ env.REGISTRY_GH }}
+      #     username: ${{ github.actor }}
+      #     password: ${{ secrets.GITHUB_TOKEN }}
+
+      # - name: Set up QEMU
+      #   uses: docker/setup-qemu-action@v2
+          
+      # - name: Set up Docker Buildx
+      #   uses: docker/setup-buildx-action@v2
+    
+      # - name: Build and Push a Docker Image
+      #   uses: docker/build-push-action@v4
+      #   with:
+      #     push: true
+      #     tags: |
+      #       ${{ env.REGISTRY_GH }}/${{ env.GITHUB_REPO_OWNER }}/${{ env.GITHUB_REPO_NAME }}:latest
+      #       ${{ env.REGISTRY_GH }}/${{ env.GITHUB_REPO_OWNER }}/${{ env.GITHUB_REPO_NAME }}:${{ env.GENERAL_TAG }}
+      #     build-args: |
+      #       GITHUB_REPO_OWNER=${{ env.GITHUB_REPO_OWNER }}
+      #     cache-from: type=gha
+      #     cache-to: type=gha,mode=max
+
+      # - name: Configure AWS Credentials - Shared
+      #   uses: aws-actions/configure-aws-credentials@v1
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_SHARED_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SHARED_SECRET_KEY }}
+      #     aws-region: us-east-1
+      #     mask-aws-account-id: true
+
+      # - name: Create AWS ECR Repository
+      #   uses: cookiecutter-openedx/aws-ecr-create@v0.0.2
+      #   with:
+      #     aws-ecr-repository: ${{ env.GITHUB_REPO_OWNER }}/${{ env.GITHUB_REPO_NAME }}
+
+      # - name: Set Policies on the Repository in ECR
+      #   uses: Add-Jazztech/github-set-policies-repo-ecr-action@v1.0.0
+
+      # - name: Move Image from GHCR to Environment ECR
+      #   run: |
+      #     docker pull ${{ env.REGISTRY_GH }}/${{ env.GITHUB_REPO_OWNER }}/${{ env.GITHUB_REPO_NAME }}:${{ env.GENERAL_TAG }}
+      #     docker tag ${{ env.REGISTRY_GH }}/${{ env.GITHUB_REPO_OWNER }}/${{ env.GITHUB_REPO_NAME }}:${{ env.GENERAL_TAG }} ${{ env.ENDPOINT_ECR_SHARED }}/${{ env.GITHUB_REPO_OWNER }}/${{ env.GITHUB_REPO_NAME }}:${{ env.GENERAL_TAG }}
+      #     docker push ${{ env.ENDPOINT_ECR_SHARED }}/${{ env.GITHUB_REPO_OWNER }}/${{ env.GITHUB_REPO_NAME }}:${{ env.GENERAL_TAG }}
+
+    #  outputs:
+    #    github-repo-owner: ${{ env.GITHUB_REPO_OWNER }}
+    #    github-repo-name: ${{ env.GITHUB_REPO_NAME }}
+    #    general-tag: ${{ env.GENERAL_TAG }}
+    #    registry: ${{ env.REGISTRY_GH }}
+
+  #============================================================================================================
+
+  # Deploy-Homologation:
+  #   name: "Deploy-Hml"
+  #   runs-on: ubuntu-latest
+  #   environment: jazz-dev-eks
+  #   env:
+  #     SERVER: dev
+  #     GITHUB_REPO_OWNER: ${{ needs.Build-Application.outputs.github-repo-owner }}
+  #     GITHUB_REPO_NAME: ${{ needs.Build-Application.outputs.github-repo-name }}
+  #     GENERAL_TAG: ${{ needs.Build-Application.outputs.general-tag }}
+  #     REGISTRY_GH: ${{ needs.Build-Application.outputs.registry }}
+  #     ENDPOINT_ECR_SHARED: 859892328121.dkr.ecr.us-east-1.amazonaws.com
+  #     NAMESPACE: development
+  #   needs: ["Build-Application"]
+
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #       with:
+  #         submodules: 'true'
+  #         token: ${{ secrets.JTPATGHPKG001 }}
+      
+  #     - name: Update Submodules
+  #       run: git submodule update --remote modules/lib-necessary-files-deploy
+
+  #     - name: Install Boto3
+  #       run: pip install boto3
+
+  #     - name: Configure AWS Credentials - Dev
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_DEV_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_DEV_SECRET_KEY }}
+  #         aws-region: us-east-1
+  #         mask-aws-account-id: true
+
+  #     - name: Amazon ECR Login
+  #       uses: aws-actions/amazon-ecr-login@v1
+  #       with:
+  #         registry-type: private
+  #         registries: "859892328121"
+
+  #     - name: Get Secrets Name and Value from AWS Secrets Manager to Deploy in EKS
+  #       uses: Add-Jazztech/github-get-secrets-aws-helm-action@v1.0.0
+
+  #     - name: Get Parameters Name and Value from AWS SSM Parameter Store to Deploy in EKS
+  #       uses: Add-Jazztech/github-get-parameters-aws-helm-action@v1.0.0
+
+  #     - name: Get secrets and parameters references from AWS to fill them in values.yaml and deployment.yml files in Helm Charts
+  #       uses: Add-Jazztech/github-replace-environment-variables-helm-action@v1.0.0
+  #       with:
+  #         values-yaml-path: "./modules/lib-necessary-files-deploy/chart/values"
+  #         values-yaml-file-name: "values-${{ env.SERVER }}.yaml"
+  #         deployment-yaml-path: "../templates"
+  #         deployment-yaml-file-name: "deployment.yaml"
+
+  #     - name: Replace Environment Variables
+  #       run: envsubst < ./modules/lib-necessary-files-deploy/chart/values/values-${{ env.SERVER }}.yaml > ./modules/lib-necessary-files-deploy/chart/values/values-${{ env.SERVER }}-rplc.yaml
+
+  #     - name: Deploy Helm to EKS
+  #       uses: Add-Jazztech/github-deploy-eks-helm-action@v1.0.0
+  #       with:
+  #         aws-region: us-east-1
+  #         cluster-name: eks-dev
+  #         chart-path: ./modules/lib-necessary-files-deploy/chart
+  #         namespace: development
+  #         config-files: ./modules/lib-necessary-files-deploy/chart/values/values-${{ env.SERVER }}-rplc.yaml
+  #         config-ingress: true
+
+  #   outputs:
+  #     github-repo-owner: ${{ env.GITHUB_REPO_OWNER }}
+  #     github-repo-name: ${{ env.GITHUB_REPO_NAME }}
+  #     general-tag: ${{ env.GENERAL_TAG }}
+  #     registry: ${{ env.REGISTRY_GH }}
+
+  # #============================================================================================================
+
+  # Deploy-Pre-Production:
+  #   name: "Deploy-Pprd"
+  #   runs-on: ubuntu-latest
+  #   environment: jazz-pre-ecs
+  #   env:
+  #     SERVER: pprd
+  #     GITHUB_REPO_OWNER: ${{ needs.Deploy-Homologation.outputs.github-repo-owner }}
+  #     GITHUB_REPO_NAME: ${{ needs.Deploy-Homologation.outputs.github-repo-name }}
+  #     GENERAL_TAG: ${{ needs.Deploy-Homologation.outputs.general-tag }}
+  #     REGISTRY_GH: ${{ needs.Deploy-Homologation.outputs.registry }}
+  #     ENDPOINT_ECR_SHARED: 859892328121.dkr.ecr.us-east-1.amazonaws.com
+  #     ACCOUNT_ID_TASK_DEFINITION: "080287095596"
+  #     DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+  #   needs: ["Deploy-Homologation"]
+
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #       with:
+  #         submodules: 'true'
+  #         token: ${{ secrets.JTPATGHPKG001 }}
+
+  #     - name: Update Submodules
+  #       run: git submodule update --remote modules/lib-necessary-files-deploy
+
+  #     - name: Install Boto3
+  #       run: pip install boto3
+
+  #     - name: Configure AWS Credentials - Pprd
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_PPRD_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_PPRD_SECRET_KEY }}
+  #         aws-region: us-east-1
+  #         mask-aws-account-id: true
+
+  #     - name: Amazon ECR Login
+  #       uses: aws-actions/amazon-ecr-login@v1
+  #       with:
+  #         registry-type: private
+  #         registries: "859892328121"
+
+  #     - name: Action to Get Parameters From AWS SSM Parameter Store
+  #       uses: Add-Jazztech/github-get-parameters-aws-action@v1.0.0
+
+  #     - name: Action to Get Secrets and Parameters References from AWS to Populate Them in Tasks Definitions to Deploy to ECS
+  #       uses: Add-Jazztech/github-replace-secrets-parameters-task-definition-action@v1.0.0
+  #       with:
+  #         task-definition-path: "./modules/lib-necessary-files-deploy/tasks-definitions"
+  #         task-definition-name: "task-definition-${{ env.SERVER }}.json"
+
+  #     - name: Replace Environment Variables
+  #       run: envsubst < ./modules/lib-necessary-files-deploy/tasks-definitions/task-definition-${{ env.SERVER }}.json > ./modules/lib-necessary-files-deploy/tasks-definitions/task-definition-${{ env.SERVER }}-rplc.json
+  #       env:
+  #         CONTAINER_NAME: ${{ env.GITHUB_REPO_NAME }}-${{ env.SERVER }}
+  #         REF_IMAGE: ${{ env.ENDPOINT_ECR_SHARED }}/${{ env.GITHUB_REPO_OWNER }}/${{ env.GITHUB_REPO_NAME }}
+
+  #     - name: Amazon ECS "Deploy Task Definition"
+  #       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+  #       with:
+  #         task-definition: ./modules/lib-necessary-files-deploy/tasks-definitions/task-definition-${{ env.SERVER }}-rplc.json
+  #         service: ${{ env.GITHUB_REPO_NAME }}
+  #         cluster: ecs-pprd
+  #         wait-for-service-stability: true
+  #         wait-for-minutes: 15 minutes
+
+  #   outputs:
+  #     github-repo-owner: ${{ env.GITHUB_REPO_OWNER }}
+  #     github-repo-name: ${{ env.GITHUB_REPO_NAME }}
+  #     general-tag: ${{ env.GENERAL_TAG }}
+
+  # #============================================================================================================
+
+  # Deploy-Sandbox:
+  #   name: "Deploy-Sdx"
+  #   runs-on: ubuntu-latest
+  #   environment: jazz-sdx-ecs
+  #   env:
+  #     SERVER: sdx
+  #     GITHUB_REPO_OWNER: ${{ needs.Deploy-Pre-Production.outputs.github-repo-owner }}
+  #     GITHUB_REPO_NAME: ${{ needs.Deploy-Pre-Production.outputs.github-repo-name }}
+  #     GENERAL_TAG: ${{ needs.Deploy-Pre-Production.outputs.general-tag }}
+  #     ENDPOINT_ECR_SHARED: 859892328121.dkr.ecr.us-east-1.amazonaws.com
+  #     ACCOUNT_ID_TASK_DEFINITION: "587370989282"
+  #     DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+  #   needs: ["Deploy-Pre-Production"]
+
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #       with:
+  #         submodules: 'true'
+  #         token: ${{ secrets.JTPATGHPKG001 }}
+
+  #     - name: Update Submodules
+  #       run: git submodule update --remote modules/lib-necessary-files-deploy
+
+  #     - name: Install Boto3
+  #       run: pip install boto3
+
+  #     - name: Configure AWS Credentials - Sdx
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_SDX_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_PROD_SECRET_KEY }}
+  #         aws-region: us-east-1
+  #         mask-aws-account-id: true
+
+  #     - name: Amazon ECR Login
+  #       uses: aws-actions/amazon-ecr-login@v1
+  #       with:
+  #         registry-type: private
+  #         registries: "859892328121"
+
+  #     - name: Action to Get Parameters From AWS SSM Parameter Store
+  #       uses: Add-Jazztech/github-get-parameters-aws-action@v1.0.0
+
+  #     - name: Action to Get Secrets and Parameters References from AWS to Populate Them in Tasks Definitions to Deploy to ECS
+  #       uses: Add-Jazztech/github-replace-secrets-parameters-task-definition-action@v1.0.0
+  #       with:
+  #         task-definition-path: "./modules/lib-necessary-files-deploy/tasks-definitions"
+  #         task-definition-name: "task-definition-${{ env.SERVER }}.json"
+
+  #     - name: Replace Environment Variables
+  #       run: envsubst < ./modules/lib-necessary-files-deploy/tasks-definitions/task-definition-${{ env.SERVER }}.json > ./modules/lib-necessary-files-deploy/tasks-definitions/task-definition-${{ env.SERVER }}-rplc.json
+  #       env:
+  #         CONTAINER_NAME: ${{ env.GITHUB_REPO_NAME }}-${{ env.SERVER }}
+  #         REF_IMAGE: ${{ env.ENDPOINT_ECR_SHARED }}/${{ env.GITHUB_REPO_OWNER }}/${{ env.GITHUB_REPO_NAME }}
+
+  #     - name: Amazon ECS "Deploy Task Definition"
+  #       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+  #       with:
+  #         task-definition: ./modules/lib-necessary-files-deploy/tasks-definitions/task-definition-${{ env.SERVER }}-rplc.json
+  #         service: ${{ env.GITHUB_REPO_NAME }}
+  #         cluster: addhub-sandbox
+  #         wait-for-service-stability: true
+  #         wait-for-minutes: 15 minutes
+
+  # #============================================================================================================
+
+  # Deploy-Production:
+  #   name: "Deploy-Prod"
+  #   runs-on: ubuntu-latest
+  #   environment: jazz-prod-ecs
+  #   env:
+  #     SERVER: prod
+  #     GITHUB_REPO_OWNER: ${{ needs.Deploy-Pre-Production.outputs.github-repo-owner }}
+  #     GITHUB_REPO_NAME: ${{ needs.Deploy-Pre-Production.outputs.github-repo-name }}
+  #     GENERAL_TAG: ${{ needs.Deploy-Pre-Production.outputs.general-tag }}
+  #     ENDPOINT_ECR_SHARED: 859892328121.dkr.ecr.us-east-1.amazonaws.com
+  #     ACCOUNT_ID_TASK_DEFINITION: "587370989282"
+  #     DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+  #   needs: ["Deploy-Pre-Production"]
+
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #       with:
+  #         submodules: 'true'
+  #         token: ${{ secrets.JTPATGHPKG001 }}
+
+  #     - name: Update Submodules
+  #       run: git submodule update --remote modules/lib-necessary-files-deploy
+
+  #     - name: Install Boto3
+  #       run: pip install boto3
+
+  #     - name: Configure AWS Credentials - Prod
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_PROD_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_PROD_SECRET_KEY }}
+  #         aws-region: us-east-1
+  #         mask-aws-account-id: true
+
+  #     - name: Amazon ECR Login
+  #       uses: aws-actions/amazon-ecr-login@v1
+  #       with:
+  #         registry-type: private
+  #         registries: "859892328121"
+
+  #     - name: Action to Get Parameters From AWS SSM Parameter Store
+  #       uses: Add-Jazztech/github-get-parameters-aws-action@v1.0.0
+
+  #     - name: Action to Get Secrets and Parameters References from AWS to Populate Them in Tasks Definitions to Deploy to ECS
+  #       uses: Add-Jazztech/github-replace-secrets-parameters-task-definition-action@v1.0.0
+  #       with:
+  #         task-definition-path: "./modules/lib-necessary-files-deploy/tasks-definitions"
+  #         task-definition-name: "task-definition-${{ env.SERVER }}.json"
+
+  #     - name: Replace Environment Variables
+  #       run: envsubst < ./modules/lib-necessary-files-deploy/tasks-definitions/task-definition-${{ env.SERVER }}.json > ./modules/lib-necessary-files-deploy/tasks-definitions/task-definition-${{ env.SERVER }}-rplc.json
+  #       env:
+  #         CONTAINER_NAME: ${{ env.GITHUB_REPO_NAME }}-${{ env.SERVER }}
+  #         REF_IMAGE: ${{ env.ENDPOINT_ECR_SHARED }}/${{ env.GITHUB_REPO_OWNER }}/${{ env.GITHUB_REPO_NAME }}
+
+  #     - name: Amazon ECS "Deploy Task Definition"
+  #       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+  #       with:
+  #         task-definition: ./modules/lib-necessary-files-deploy/tasks-definitions/task-definition-${{ env.SERVER }}-rplc.json
+  #         service: ${{ env.GITHUB_REPO_NAME }}
+  #         cluster: addhub-producao
+  #         wait-for-service-stability: true
+  #         wait-for-minutes: 15 minutes

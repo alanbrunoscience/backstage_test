@@ -1,0 +1,214 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Class Name="Jazz.Covenant.Domain.Covenant">
+    <Position X="0.5" Y="0.5" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAIAAAAIABAAAAAAAQAQAAAAEAxAAAEAgAAKQA=</HashCode>
+      <FileName>Covenant.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Jazz.Covenant.Domain.CovenantFavorite">
+    <Position X="10.5" Y="0.5" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAACAAAgAAAE=</HashCode>
+      <FileName>CovenantFavorite.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Jazz.Covenant.Domain.EndosamentMargin">
+    <Position X="4.5" Y="0.5" Width="5.5" />
+    <TypeIdentifier>
+      <HashCode>BwgMQBAYAAAAAKgCgQACQAQAQAkFgkIgIQAUEggAsEE=</HashCode>
+      <FileName>EndosamentMargin.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Jazz.Covenant.Domain.Endoser">
+    <Position X="10.5" Y="2.75" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAEAAAAAAAAgAIAA=</HashCode>
+      <FileName>Endoser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Jazz.Covenant.Domain.MarginEndosamentStatusHistory" Collapsed="true">
+    <Position X="5.75" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAABAAAAAAAAAAACQAAIAEAAAA=</HashCode>
+      <FileName>MarginEndosamentStatusHistory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Jazz.Covenant.Domain.MarginReserve" Collapsed="true">
+    <Position X="7.5" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BwkMQBAYAAAAAKgCgQACQAQAQA1lgkIgJQAUEgkAsEE=</HashCode>
+      <FileName>MarginReserve.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Jazz.Covenant.Domain.MarginReserveStatusHistory" Collapsed="true">
+    <Position X="5.75" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAAAAAEQAABAAAAAAAAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>MarginReserveStatusHistory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Jazz.Covenant.Domain.Modality" Collapsed="true">
+    <Position X="7.5" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAAAAAQAAAAAAAAAAAAAAAgACAA=</HashCode>
+      <FileName>Modality.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Jazz.Covenant.Domain.ModalityCovenant" Collapsed="true">
+    <Position X="9.25" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAADABAAAAAAAAAAAAAAAAAAAAgAAAA=</HashCode>
+      <FileName>ModalityCovenant.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Jazz.Covenant.Domain.RegisterNotMargin" Collapsed="true">
+    <Position X="4" Y="13.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAACAAAAAAAAAAAAAAQAAQAAEAgAAAE=</HashCode>
+      <FileName>RegisterNotMargin.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Jazz.Covenant.Domain.ReserveMargin" Collapsed="true">
+    <Position X="5.75" Y="13.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BwgMQBAYAAAAAKgCgQACQAQAQAkFgkIgIQAUEggAsEE=</HashCode>
+      <FileName>ReserveMargin.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Jazz.Covenant.Domain.CommandEvent.Commands">
+    <Position X="5.75" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CommandEvent\Commands.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Jazz.Covenant.Domain.CommandEvent.Events" Collapsed="true">
+    <Position X="4" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CommandEvent\Events.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Jazz.Covenant.Domain.Constants.BankName">
+    <Position X="4" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAA=</HashCode>
+      <FileName>Constants\BankName.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Jazz.Covenant.Domain.Dto.Adapters.CancelEndosermentRequestDto" Collapsed="true">
+    <Position X="1.5" Y="14.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dto\Adapters\CancelEndosermentDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Jazz.Covenant.Domain.Dto.Adapters.CancelEndosermentResponseDto">
+    <Position X="1" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dto\Adapters\CancelEndosermentDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Jazz.Covenant.Domain.Dto.Adapters.CancelMarginReserveDtoRequest" Collapsed="true">
+    <Position X="1.5" Y="13.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAQAgAACAAAA=</HashCode>
+      <FileName>Dto\Adapters\CancelMarginReserveDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Jazz.Covenant.Domain.Dto.Adapters.CancelMarginReserveDtoResponse">
+    <Position X="1" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAAAAAQAAAAAAAAAAAgAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Dto\Adapters\CancelMarginReserveDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Jazz.Covenant.Domain.Dto.Adapters.EndosamentMarginDtoRequest">
+    <Position X="11" Y="6.75" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>BwgMQBAQAAAAAKgAgQACQIQAAAkFgkIgIQBQEgAAkEE=</HashCode>
+      <FileName>Dto\Adapters\EndosamentMarginDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Jazz.Covenant.Domain.Dto.Adapters.EndosamentMarginDtoResponse" Collapsed="true">
+    <Position X="9.25" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAAAAAQAAAAAAAAAAAgAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Dto\Adapters\EndosamentMarginDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Jazz.Covenant.Domain.Dto.Adapters.MarginReserveDtoRequest" Collapsed="true">
+    <Position X="9.25" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BwgMQBAQAAAAAKgAgQACQIQAAAkFgkIgIQBQEgAAkEE=</HashCode>
+      <FileName>Dto\Adapters\MarginReserveDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Jazz.Covenant.Domain.Dto.Adapters.MarginReserveDtoResponse" Collapsed="true">
+    <Position X="4" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAAAAAQAAAAAAAAAAAgAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Dto\Adapters\MarginReserveDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="Jazz.Covenant.Domain.Interfaces.Endoser.ICreateEndoserAdapter" Collapsed="true">
+    <Position X="4" Y="14.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAA=</HashCode>
+      <FileName>Interfaces\Endoser\ICreateEndoserAdapter.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Jazz.Covenant.Domain.Interfaces.Endoser.IEndoserAdapter" Collapsed="true">
+    <Position X="5.75" Y="14.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACCAIAAAAAAAgAAAAAAgAAAAAAABAAAAAAIAAAAAA=</HashCode>
+      <FileName>Interfaces\Endoser\IEndoserAdapter.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="Jazz.Covenant.Domain.Enums.CovenantLevel" Collapsed="true">
+    <Position X="4" Y="15.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEIAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAA=</HashCode>
+      <FileName>Enums\CovenantLevel.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Jazz.Covenant.Domain.Enums.EndoserAggregator" Collapsed="true">
+    <Position X="5.75" Y="15.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Enums\Endoser.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Jazz.Covenant.Domain.Enums.MarginReserveStatus" Collapsed="true">
+    <Position X="7.5" Y="15.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAgAAQAAgEAAAAAAAAAAAAAAAAAAIAAAAAA=</HashCode>
+      <FileName>Enums\MarginReserveStatus.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Jazz.Covenant.Domain.Enums.OperationType" Collapsed="true">
+    <Position X="9.25" Y="15.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Enums\OperationType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Jazz.Covenant.Domain.Enums.ProductType" Collapsed="true">
+    <Position X="4" Y="16.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Enums\ProductType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Jazz.Covenant.Domain.Enums.StatusEndosament" Collapsed="true">
+    <Position X="5.75" Y="16.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACBAACAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAQ=</HashCode>
+      <FileName>Enums\StatusEndosament.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
